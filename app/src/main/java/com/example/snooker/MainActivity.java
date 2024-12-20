@@ -147,6 +147,13 @@ public class MainActivity extends AppCompatActivity {
         // tanquem el fitxer del frame
         el_frame.Tancar();
 
+        // Donem temps a sentir el missatge final
+        try {
+            Thread.sleep(6000);
+        } catch (Exception e) {
+            Log.e("Final", "error sleep", e);
+        };
+
         // Tanquem l'aplicació
         finishAndRemoveTask();
     }
