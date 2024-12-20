@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Set button click listeners
         btnSpeak.setOnClickListener(this::startListening);
-        btnListen.setOnClickListener(this::speak);
+        // btnListen.setOnClickListener(this::speak);
+        btnListen.setOnClickListener(this::finalitzar);
 
         // Creem els jugadors
         els_jugadors = new Jugadors();
