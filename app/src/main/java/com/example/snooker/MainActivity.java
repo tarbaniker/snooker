@@ -136,6 +136,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void finalitzar(View view) {
+        // quan es toca aquest botó, sortim de l'aplicació
+        // - primer donem les gràcies per utilitzar el programa
+        speechRecognizer.stopListening();
+        String text = "Final. Gràcies per utilitzar aquesta aplicació.";
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+
+        // tanquem el fitxer del frame
+        el_frame.Tancar();
+
+        // Tanquem l'aplicació
+        finishAndRemoveTask();
+    }
     @Override
     protected void onDestroy() {
         if (speechRecognizer != null) {
