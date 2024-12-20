@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Donem temps a sentir el missatge final
         try {
-            Thread.sleep(6000);
+            Thread.sleep(5000);
         } catch (Exception e) {
             Log.e("Final", "error sleep", e);
         };
