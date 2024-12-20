@@ -8,7 +8,7 @@ V11
 V12
 ===
 Els objectius de la V12 són:
-- Canviar botó "Pronunciar" per "Final" i que acabi l'aplicació
+- Canviar botó "Pronunciar" per "Final" i que acabi l'aplicació **FET**
 - Deixar de mostrar el text reconegut (vermella, groga, falta de ... etc)
 - Eliminar botó "Reconèixer" i que reconegui "continuament" el que se li diu.
   - això implica tenir una paraula clau que s'haurà de dir abans del color de la bola o la falta
