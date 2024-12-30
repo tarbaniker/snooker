@@ -30,6 +30,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     // Initialize SpeechRecognizer
+    // des del PC del Josep
     private SpeechRecognizer speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
     private TextToSpeech textToSpeech;
     private Button btnSpeak, btnListen;
