@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             Thread.sleep(5000);
         } catch (Exception e) {
             Log.e("Final", "error sleep", e);
-        };
+        }
 
         // Tanquem l'aplicació
         finishAndRemoveTask();
