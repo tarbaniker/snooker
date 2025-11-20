@@ -17,7 +17,7 @@ public class Reproductor {
             Thread.sleep(duracio);
         } catch (Exception e) {
             Log.e("MediaPlayer", "error sleep", e);
-        };
+        }
 
         Log.i("MediaPlayer", "Release");
         mediaPlayer.release();

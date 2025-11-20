@@ -14,4 +14,6 @@ Els objectius de la V12 són:
   - això implica tenir una paraula clau que s'haurà de dir abans del color de la bola o la falta
   - podria ser el nom del jugador que l'ha entrat o ha fet la falta
   - de moment provarem amb una paraula clau, per exemple: "lola" o "nena" o el que se'ns acudeixi
+  - provaré de fer diverses paraules clau: "bola", "falta", "canvi". 
+  - primer provaré amb "bola"
 .
