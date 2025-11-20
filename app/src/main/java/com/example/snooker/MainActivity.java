@@ -181,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!resultats_parcials) {
                     etInput.setText(matches.get(0));
                     Log.i("SpeechRecognitionListen", "onResults" + matches);
+                    parsingBola(matches.get(0));
                     parsingMatches(matches.get(0));
                 }
             }
@@ -266,6 +267,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             Log.i("SpeechRecognitionListen", "onPartialResults, matches ->" + matches + "<-");
             //  etInput.setText(matches.get(0));
+            parsingBola(matches.get(0));
             parsingMatches(matches.get(0));
             resultats_parcials = true;
         }
@@ -275,6 +277,26 @@ public class MainActivity extends AppCompatActivity {
             Log.i("SpeechRecognitionListen", "onEvent -->" + params + "<--");
         }
 
+        public String parsingBola(String match) {
+            Log.i("parsingBola", "busquem paraula 'bola' ");
+            Boolean trobat = false;
+            if(Objects.equals(match, "bola")) {
+                Log.i("parsingBola","s'ha trobat bola");
+            } else if(Objects.equals(match, "vola")) {
+                Log.i("ParsingBola","s'ha trobat vola");
+            }
+            if (trobat) {
+                /* Aquí s'ha de treure la paraula trobada del string */
+            Log.i("parsingBola","S'ha de treure bola del string -->" + match + "<--");
+            }
+        return treurePrimeraParaula(match);
+        }
+
+        public String treurePrimeraParaula(String text) {
+            if (text == null || text.trim().isEmpty()) return "";
+            String[] parts = text.trim().split("\\s+", 2);
+            return parts.length > 1 ? parts[1] : "";
+        }
         public void parsingMatches(String match) {
             Log.i("parsingMatches", "analitzem paraules rebudes -->" + match + "<--");
             resultats_parcials = false;

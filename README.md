@@ -17,3 +17,7 @@ Els objectius de la V12 són:
   - provaré de fer diverses paraules clau: "bola", "falta", "canvi". 
   - primer provaré amb "bola"
 .
+
+provaré de fer, primer de tot, que reconegui la paraula "bola" o "vola" i retorni
+un string amb la resta de paraules reconegudes i a continuació invoqui el procediment actual 
+de reconeixemnt de paraules.
