@@ -108,6 +108,16 @@ public class MainActivity extends AppCompatActivity {
         String text = "Comença el freim. Trenca el jugador "+els_jugadors.nom_jugador();
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
 
+        // Donem temps a sentir el missatge inicial
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            Log.e("onInit", "error sleep", e);
+        }
+
+        // Afegeixo que comenci el startListening
+        startListening(findViewById(R.id.main));
+
     }
 
     @SuppressLint("UnsafeOptInUsageError")
@@ -176,6 +186,10 @@ public class MainActivity extends AppCompatActivity {
         public void onResults(Bundle results) {
             Log.i("SpeechRecognitionListen", "onResults, results -> " + results + "<-");
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            // Després d'obtenir els resultats, netegem
+            Log.i("SpeechRecognitionListen","onResults netegem results");
+            results.clear();
+
             Log.i("SpeechRecognitionListen", "onResults, matches ->" + matches + "<-");
             if (matches != null) {
                 // Forcem que no siguin resultats parcials, a veure que fa
@@ -408,6 +422,15 @@ public class MainActivity extends AppCompatActivity {
                 // Apuntem punts al fitxer del frame
                 el_frame.EscriurePunts(els_jugadors.nomJugador, els_jugadors.getPuntsJugador(1), els_jugadors.getPuntsJugador(2));
 
+                // Donem temps a sentir el missatge de la puntuació
+                try {
+                    Thread.sleep(5000);
+                } catch (Exception e) {
+                    Log.e("Final", "error sleep", e);
+                }
+
+                // Tornem a engegar el listener
+                startListening(findViewById(R.id.main));
             }
         }
     }
