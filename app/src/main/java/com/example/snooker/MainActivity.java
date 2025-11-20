@@ -267,9 +267,10 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             Log.i("SpeechRecognitionListen", "onPartialResults, matches ->" + matches + "<-");
             //  etInput.setText(matches.get(0));
-            parsingBola(matches.get(0));
-            parsingMatches(matches.get(0));
+
+            parsingMatches(parsingBola(matches.get(0)));
             resultats_parcials = true;
+
         }
 
         @Override
@@ -278,18 +279,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public String parsingBola(String match) {
+            String subMatch;
             Log.i("parsingBola", "busquem paraula 'bola' ");
             Boolean trobat = false;
-            if(Objects.equals(match, "bola")) {
+            if(Objects.equals(match, "bola"))  {
                 Log.i("parsingBola","s'ha trobat bola");
+                trobat = true;
             } else if(Objects.equals(match, "vola")) {
                 Log.i("ParsingBola","s'ha trobat vola");
+                trobat = true;
             }
             if (trobat) {
-                /* Aquí s'ha de treure la paraula trobada del string */
-            Log.i("parsingBola","S'ha de treure bola del string -->" + match + "<--");
+                /* Aquí es treu la paraula trobada del string */
+                subMatch = treurePrimeraParaula(match);
+                Log.i("parsingBola","s'ha tret la primera paraula -->"+treurePrimeraParaula(match)+"<--");
             }
-        return treurePrimeraParaula(match);
+            else { subMatch = match;}
+
+            return subMatch;
         }
 
         public String treurePrimeraParaula(String text) {
