@@ -178,12 +178,14 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             Log.i("SpeechRecognitionListen", "onResults, matches ->" + matches + "<-");
             if (matches != null) {
+                // Forcem que no siguin resultats parcials, a veure que fa
+                // resultats_parcials = false;
                 if (!resultats_parcials) {
                     etInput.setText(matches.get(0));
-                    Log.i("SpeechRecognitionListen", "onResults" + matches);
-                    parsingBola(matches.get(0));
-                    parsingMatches(matches.get(0));
+                    Log.i("SpeechRecognitionListen", "onResults !resultats_parcials ->" + matches+"<--");
+                    parsingMatches(parsingBola(matches.get(0)));
                 }
+                else { Log.i("SpeechRecognitionListen","onResults resultats_parcials"); }
             }
         }
 
@@ -269,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
             //  etInput.setText(matches.get(0));
 
             parsingMatches(parsingBola(matches.get(0)));
+
             resultats_parcials = true;
 
         }
@@ -280,19 +283,20 @@ public class MainActivity extends AppCompatActivity {
 
         public String parsingBola(String match) {
             String subMatch;
-            Log.i("parsingBola", "busquem paraula 'bola' ");
+            Log.i("parsingBola", "busquem paraula 'bola'/'vola'. Rebut -->"+match+"<--");
             Boolean trobat = false;
-            if(Objects.equals(match, "bola"))  {
+            if (match.contains("bola")) {
                 Log.i("parsingBola","s'ha trobat bola");
                 trobat = true;
-            } else if(Objects.equals(match, "vola")) {
+            } else if(match.contains("vola")) {
                 Log.i("ParsingBola","s'ha trobat vola");
                 trobat = true;
             }
             if (trobat) {
                 /* Aquí es treu la paraula trobada del string */
+                Log.i("parsingBola","abans de treure primera paraula -->"+match+"<--");
                 subMatch = treurePrimeraParaula(match);
-                Log.i("parsingBola","s'ha tret la primera paraula -->"+treurePrimeraParaula(match)+"<--");
+                Log.i("parsingBola","s'ha tret la primera paraula -->"+subMatch+"<--");
             }
             else { subMatch = match;}
 
