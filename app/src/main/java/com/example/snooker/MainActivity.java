@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean resultats_trobats = false;
     private Bundle results_ant = new Bundle();
     private boolean continuar_escoltant = true;
+    private boolean buidar_buffer = false;
 
     private Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     // Variable/s per a guardar paraules rebudes per onResults i onPartialResults
@@ -234,32 +235,31 @@ public class MainActivity extends AppCompatActivity {
             //        + matches.get(0).substring(inici_text) + "<-"
             //        + " inici_text ->" + inici_text + "<-");
 
-            //Log.i("SpeechRecognitionListen", "onResults, ordre ->" + ordre + "<-");
-            if (!matches.get(0).substring(inici_text).isEmpty())
-                afegir_ordre(matches.get(0).substring(inici_text));
+            Log.i("SpeechRecognitionListen","onResults, ordre ->"+ordre+"<-");
+            if (!matches.get(0).substring(inici_text).isEmpty()) {
+                if (!buidar_buffer) {
+                    afegir_ordre(matches.get(0).substring(inici_text));
 
-            //Posem l'inici del text
-            inici_text = matches.get(0).length();
-            lexic.tokenitzar(ordre);
-            if (lexic.complet && !lexic.error) fer_ordre();
-            if (lexic.complet || lexic.error) {
-                ordre = "";
-            }
-            if (lexic.error) {
-                fer_repetir();
-            }
+                    //Posem l'inici del text
+                    inici_text = matches.get(0).length();
 
-            if (continuar_escoltant) {
-                startListeningAgain();
+                    lexic.tokenitzar(ordre);
+                    if (lexic.complet && !lexic.error) fer_ordre();
+                    if (lexic.complet || lexic.error) {
+                        ordre = "";
+                    }
+                    if (lexic.error) {
+                        fer_repetir();
+                        lexic.reset();
+                        buidar_buffer = true;
+                    }
+
+                    if (continuar_escoltant) {
+                        startListeningAgain();
+                    }
+                } else inici_text = matches.get(0).length();
             }
-            if (lexic.tokens.isEmpty()) {
-                // Esperem 1000ms abans de sortir del onResults
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    Log.e("onInit", "error sleep", e);
-                }
-            }
+            else buidar_buffer = false;
             date = new Date();
             data_sdf = sdf.format(date);
             Log.i("SpeechRecognitionListen", "onResults. Sortida "+data_sdf);
@@ -300,27 +300,26 @@ public class MainActivity extends AppCompatActivity {
             //        + matches.get(0).substring(inici_text) + "<-"
             //        + " inici_text ->" + inici_text + "<-");
             // Guardem les paraules rebudes
-            afegir_ordre(matches.get(0).substring(inici_text));
-            //Log.i("SpeechRecognitionListen", "onPartialResults, ordre ->" + ordre + "<-");
+            Log.i("SpeechRecognitionListen", "onPartialResults, ordre ->" + ordre + "<-");
+            if (!matches.get(0).substring(inici_text).isEmpty()) {
+                if (!buidar_buffer) {
+                    afegir_ordre(matches.get(0).substring(inici_text));
 
-            //posem l'inici de text
-            inici_text = matches.get(0).length();
-            lexic.tokenitzar(ordre);
-            if (lexic.complet && !lexic.error) fer_ordre();
-            if (lexic.complet || lexic.error) {
-                ordre = "";
+                    //posem l'inici de text
+                    inici_text = matches.get(0).length();
+                    lexic.tokenitzar(ordre);
+                    if (lexic.complet && !lexic.error) fer_ordre();
+                    if (lexic.complet || lexic.error) {
+                        ordre = "";
+                    }
+                    if (lexic.error) {
+                        fer_repetir();
+                        lexic.reset();
+                        buidar_buffer = true;
+                    }
+                } else inici_text = matches.get(0).length();
             }
-            if (lexic.error) {
-                fer_repetir();
-            }
-            if (lexic.tokens.isEmpty()) {
-                // Esperem 1000ms abans de sortir del onPartialResults
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception e) {
-                    Log.e("onInit", "error sleep", e);
-                }
-            }
+            else buidar_buffer = false;
             date = new Date();
             data_sdf = sdf.format(date);
             Log.i("SpeechRecognitionListen", "onPartialResults. Sortida "+data_sdf);
@@ -612,18 +611,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void fer_repetir() {
 
+        Log.i("fer_repetir","Entrada");
         //speechRecognizer.stopListening();
+        //speechRecognizer.cancel();
 
-        String text = "Repeteix";
+        String text = "Si us plau, repeteix";
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
 
-        // Donem temps a sentir el missatge inicial
+        // Donem temps a sentir el missatge
         try {
-            Thread.sleep(1500);
+            Thread.sleep(2000);
         } catch (Exception e) {
             Log.e("fer_repetir", "error sleep", e);
         }
         //startListeningAgain();
+        Log.i("fer_repetir","Sortida");
 
     }
 }
