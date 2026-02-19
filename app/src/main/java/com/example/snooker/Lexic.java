@@ -12,7 +12,7 @@ public class Lexic {
 
     private void reset() {   // Per inicialitzar la llista de tokens
             tokens.clear();
-            Log.i("Lexic","tokens després del clear() ->"+tokens+"<-");
+            //Log.i("Lexic","tokens després del clear() ->"+tokens+"<-");
     }
     private void afegir(String mot) {     // Per afegir a la llista de tokens les paraules detectades
         switch (mot) {
@@ -81,7 +81,7 @@ public class Lexic {
                 tokens.add(Constants.FINAL);
                 break;
             default:
-                Log.i("Lexic", "Paraula no reconeguda ->" + mot + "<-");
+                //Log.i("Lexic", "Paraula no reconeguda ->" + mot + "<-");
                 error =true;
                 complet = true;
                 break;
@@ -90,7 +90,7 @@ public class Lexic {
     }
 
     public void tokenitzar(String resultats) {
-        Log.i("Lexic","tokenitzar. resultats rebut ->"+resultats+"<-");
+        //Log.i("Lexic","tokenitzar. resultats rebut ->"+resultats+"<-");
         reset();
         complet = false;
         error = false;
@@ -99,14 +99,14 @@ public class Lexic {
         String[] words = resultats.split(" ", 10);
 
         for (String w : words) {
-            Log.i("Lexic", "tokenitzar. dins del for. mot extret ->" + w + "<-");
+            //Log.i("Lexic", "tokenitzar. dins del for. mot extret ->" + w + "<-");
             if ( !w.trim().isEmpty()) {
-                Log.i("Lexic","tokenitzar. anem a afegir ->"+w.trim()+"<-");
+                //Log.i("Lexic","tokenitzar. anem a afegir ->"+w.trim()+"<-");
                 afegir(w.trim());
             }
         }
         if (!error) {
-            Log.i("Lexic","tokenitzar. no hi ha error anem a analitzar");
+            //Log.i("Lexic","tokenitzar. no hi ha error anem a analitzar");
             analitzar();
         }
         else Log.i("Lexic","tokenitzar. hi ha error");
