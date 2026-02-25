@@ -65,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnSpeak = findViewById(R.id.btnSpeak);
-        btnListen = findViewById(R.id.btnListen);
+        //btnSpeak = findViewById(R.id.btnSpeak);
+        //btnListen = findViewById(R.id.btnListen);
         etInput = findViewById(R.id.etInput);
         tJugador = findViewById(R.id.jugador);
         tJugador1 = findViewById(R.id.jugador1);
@@ -253,13 +253,13 @@ public class MainActivity extends AppCompatActivity {
                         lexic.reset();
                         buidar_buffer = true;
                     }
-
-                    if (continuar_escoltant) {
-                        startListeningAgain();
-                    }
                 } else inici_text = matches.get(0).length();
             }
             else buidar_buffer = false;
+
+            if (continuar_escoltant) {
+                startListeningAgain();
+            }
             date = new Date();
             data_sdf = sdf.format(date);
             Log.i("SpeechRecognitionListen", "onResults. Sortida "+data_sdf);
@@ -360,7 +360,6 @@ public class MainActivity extends AppCompatActivity {
             switch (error) {
                 case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
                     mError = " network timeout";
-                    // startListening();
                     break;
                 case SpeechRecognizer.ERROR_NETWORK:
                     mError = " network";
@@ -371,7 +370,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case SpeechRecognizer.ERROR_SERVER:
                     mError = " server";
-                    //startListening();
                     break;
                 case SpeechRecognizer.ERROR_CLIENT:
                     mError = " client";
@@ -381,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
                     mError = " no match";
-                    //startListening();
+                    buidar_buffer = true;
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                     mError = " recogniser busy";
@@ -605,7 +603,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("startListeningAgain", "error sleep", e);
             }
 
-            speechRecognizer.startListening(intent);
+            //speechRecognizer.startListening(intent);
+            startListening();
         }
     }
 

@@ -12,13 +12,13 @@
 
     <TextView
         android:id="@+id/jugador"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="159dp"
+        android:layout_height="22dp"
         android:text="Hola Jugador!"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.877" />
@@ -65,28 +65,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.438">
 
-        <Button
-            android:id="@+id/btnSpeak"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/holo_red_dark"
-            android:text="Reconèixer"
-            android:textColor="@color/white" />
-
-        <Button
-            android:id="@+id/btnListen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            android:text="Final"
-            android:textColor="@color/white"
-            app:iconTintMode="screen" />
-
         <EditText
             android:id="@+id/etInput"
-            android:layout_width="377dp"
-            android:layout_height="197dp"
-            android:hint="Escriu aquí"
+            android:layout_width="361dp"
+            android:layout_height="243dp"
+            android:hint="..."
+            android:inputType="text"
             android:textColor="@color/black" />
 
     </LinearLayout>
