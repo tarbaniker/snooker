@@ -55,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private Bundle results_ant = new Bundle();
     private boolean continuar_escoltant = true;
     private boolean buidar_buffer = false;
+    private boolean escoltant = true;
 
     private Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     // Variable/s per a guardar paraules rebudes per onResults i onPartialResults
-    private String ordre = " ";
+    private String ordre = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onInit(int status) {
-        //Log.i("onInit", "inici");
+        Log.i("onInit", "inici");
         //resultats_parcials = false;
         if (status == TextToSpeech.SUCCESS) {
             int result = textToSpeech.setLanguage(Locale.forLanguageTag("ca-ES"));
@@ -140,11 +141,15 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("UnsafeOptInUsageError")
     private void startListening() {
-        //Log.i("startListening", "Inici");
+        Log.i("startListening", "Inici");
 
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.forLanguageTag("ca-ES"));
-        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, TRUE);
+        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3000L);
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 5000L);
 
         //intent.putExtra(RecognizerIntent.EXTRA_SEGMENTED_SESSION, TRUE);
         //intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1500);
@@ -155,13 +160,14 @@ public class MainActivity extends AppCompatActivity {
 
         speechRecognizer.startListening(intent);
         // startActivityForResult(intent, 1); //Aquesta instrucció fa aparèixer l'aplicació de reconeixement de veu de GOOGLE
-        //Log.i("startListening", "Després de speechRecognizer");
-    return ;
+        Log.i("startListening", "Després de speechRecognizer");
+        escoltant = true;
+
     }
 
 
     private void finalitzar() {
-        //Log.i("finalitzar", "Hem detectat la paraula final");
+        Log.i("finalitzar", "Hem detectat la paraula final");
 
         // - primer donem les gràcies per utilitzar el programa
         continuar_escoltant = false;
@@ -174,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
 
         // tanquem el fitxer del frame
-        //el_frame.Tancar();
+        // el_frame.Tancar();
 
         // Donem temps a sentir el missatge final
         try {
@@ -201,41 +207,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class SpeechRecognitionListener implements RecognitionListener {
-        private Date date = new Date();
-        private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-        String data_sdf;
 
         @Override
         public void onResults(Bundle results) {
-            date = new Date();
-            data_sdf = sdf.format(date);
-            Log.i("SpeechRecognitionListen", "onResults. Entrada "+data_sdf);
             resultats_trobats = true;
             if (!results_ant.isEmpty()) {
-                //Log.i("SpeechRecognitionListen", "onResults. results_ant no està buit");
-                //Log.i("SpeechRecognitionListen", "onResults. results_ant.size() ->" + results_ant.size() + "<- "
-                //        + " results.size() ->" + results.size() + "<-");
+                Log.i("onResults", "onResults. results_ant no està buit");
+                Log.i("onResults", "onResults. results_ant.size() ->" + results_ant.size() + "<- "
+                        + " results.size() ->" + results.size() + "<-");
                 if (results_ant.size() > results.size()) return;
                 ArrayList<String> matches_ant = results_ant.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                //Log.i("SpeechRecognitionListen", "onResults longituds: matches_ant ->" + matches_ant.get(0).length()
-                //        + "<- matches ->" + matches.get(0).length() + "<-");
+                Log.i("onResults", "onResults longituds: matches_ant ->" + matches_ant.get(0).length()
+                        + "<- matches ->" + matches.get(0).length() + "<-");
                 if (matches_ant.get(0).length() > matches.get(0).length()) {
                     return;
                 }
             }
             results_ant = results;
 
-            //Log.i("SpeechRecognitionListen", "onResults, results -> " + results + "<-");
+            Log.i("onResults", "onResults, results -> " + results + "<-");
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            //Log.i("SpeechRecognitionListen", "onResults, abans de guardar, matches ->" + matches + "<-");
+            Log.i("onResults", "onResults, abans de guardar, matches ->" + matches + "<-");
             if (matches.get(0).isEmpty()) inici_text = 0; // Potser caldrà preguntar si és nul
-            //Log.i("SpeechRecognitionListen", "onResults, abans de guardar" + " inici_text ->" + inici_text + "<-");
-            //Log.i("SpeechRecognitionListen", "onResults, abans de guardar, matches ->"
-            //        + matches.get(0).substring(inici_text) + "<-"
-            //        + " inici_text ->" + inici_text + "<-");
+            Log.i("onResults", "onResults, abans de guardar" + " inici_text ->" + inici_text + "<-");
+            Log.i("onResults", "onResults, abans de guardar, matches ->"
+                    + matches.get(0).substring(inici_text) + "<-"
+                    + " inici_text ->" + inici_text + "<-");
 
-            Log.i("SpeechRecognitionListen","onResults, ordre ->"+ordre+"<-");
+            Log.i("onResults","onResults, ordre ->"+ordre+"<-");
             if (!matches.get(0).substring(inici_text).isEmpty()) {
                 if (!buidar_buffer) {
                     afegir_ordre(matches.get(0).substring(inici_text));
@@ -253,34 +253,39 @@ public class MainActivity extends AppCompatActivity {
                         lexic.reset();
                         buidar_buffer = true;
                     }
+
+                    if (continuar_escoltant) {
+                        startListeningAgain();
+                    }
                 } else inici_text = matches.get(0).length();
             }
             else buidar_buffer = false;
+            Log.i("onResults","continuar_escoltant ->"+Boolean.toString(continuar_escoltant)+"<- "+
+                    "buidar_buffer ->"+Boolean.toString(buidar_buffer)+"<- ");
 
             if (continuar_escoltant) {
                 startListeningAgain();
             }
-            date = new Date();
-            data_sdf = sdf.format(date);
-            Log.i("SpeechRecognitionListen", "onResults. Sortida "+data_sdf);
+
         }
 
         @Override
         public void onPartialResults(Bundle partialResults) {
-            date = new Date();
-            data_sdf = sdf.format(date);
-            Log.i("SpeechRecognitionListen", "onPartialResults. Entrada "+data_sdf);
+
             if (!resultats_trobats) {
                 if (!results_ant.isEmpty()) {
-                    //Log.i("SpeechRecognitionListen", "onPartialResults. results_ant no està buit");
-                    //Log.i("SpeechRecognitionListen", "onPartialResults. results_ant.size() ->" + results_ant.size() + "<- "
-                    //        + " partialResulta.size() ->" + partialResults.size() + "<-");
+                    Log.i("onPartialResults", "onPartialResults. results_ant no està buit");
+                    Log.i("onPartialResults", "onPartialResults. results_ant.size() ->" + results_ant.size() + "<- "
+                            + " partialResulta.size() ->" + partialResults.size() + "<-");
                     if (results_ant.size() > partialResults.size()) return;
                     ArrayList<String> matches_ant = results_ant.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                     ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                    //Log.i("SpeechRecognitionListen", "onPartialResults longituds: matches_ant ->" + matches_ant.get(0).length()
-                    //        + "<- matches ->" + matches.get(0).length() + "<-");
+                    Log.i("onPartialResults", "onPartialResults longituds: matches_ant ->" + matches_ant.get(0).length()
+                            + "<- matches ->" + matches.get(0).length() + "<-");
                     if (matches_ant.get(0).length() > matches.get(0).length()) {
+                        return;
+                    }
+                    if (matches_ant.get(0) == matches.get(0)) {
                         return;
                     }
                 }
@@ -291,16 +296,16 @@ public class MainActivity extends AppCompatActivity {
 
             results_ant = partialResults;
 
-            Log.i("SpeechRecognitionListen", "onPartialResults -->" + partialResults + "<--");
+            Log.i("onPartialResults", "onPartialResults -->" + partialResults + "<--");
             ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            //Log.i("SpeechRecognitionListen", "onPartialResults, abans de guardar matches ->" + matches + "<-");
+            Log.i("onPartialResults", "onPartialResults, abans de guardar matches ->" + matches + "<-");
             if (matches.get(0).isEmpty()) inici_text = 0; // Potser caldrà preguntar si és nul
-            //Log.i("SpeechRecognitionListen", "onPartialResults, abans de guardar" + " inici_text ->" + inici_text + "<-");
-            //Log.i("SpeechRecognitionListen", "onPartialResults, abans de guardar, matches ->"
-            //        + matches.get(0).substring(inici_text) + "<-"
-            //        + " inici_text ->" + inici_text + "<-");
+            Log.i("onPartialResults", "onPartialResults, abans de guardar" + " inici_text ->" + inici_text + "<-");
+            Log.i("onPartialResults", "onPartialResults, abans de guardar, matches ->"
+                    + matches.get(0).substring(inici_text) + "<-"
+                    + " inici_text ->" + inici_text + "<-");
             // Guardem les paraules rebudes
-            Log.i("SpeechRecognitionListen", "onPartialResults, ordre ->" + ordre + "<-");
+            Log.i("onPartialResults", "onPartialResults, ordre ->" + ordre + "<-");
             if (!matches.get(0).substring(inici_text).isEmpty()) {
                 if (!buidar_buffer) {
                     afegir_ordre(matches.get(0).substring(inici_text));
@@ -320,9 +325,6 @@ public class MainActivity extends AppCompatActivity {
                 } else inici_text = matches.get(0).length();
             }
             else buidar_buffer = false;
-            date = new Date();
-            data_sdf = sdf.format(date);
-            Log.i("SpeechRecognitionListen", "onPartialResults. Sortida "+data_sdf);
         }
 
         // Implement other required methods with empty bodies
@@ -348,12 +350,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onEndOfSpeech() {
-            Log.i("SpeechRecognitionListen", "onEndOfSpeech");
+            escoltant = false;
+            Log.i("onEndOfSpeech", "Entrada. continuar_escoltant = ->"+Boolean.toString(continuar_escoltant)+"<-");
+
+            Log.i("onEndOfSpeech", "Sortida");
         }
 
         @Override
         public void onError(int error) {
-            //Log.i("SpeechRecognitionListen", "onError");
+            Log.i("SpeechRecognitionListen", "onError");
             Log.e("SpeechRecognitionListen", "onError "+String.valueOf(error));
 
             String mError;
@@ -379,7 +384,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case SpeechRecognizer.ERROR_NO_MATCH:
                     mError = " no match";
-                    buidar_buffer = true;
                     break;
                 case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
                     mError = " recogniser busy";
@@ -401,10 +405,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("onError", "error sleep", e);
             }
 
-            if (continuar_escoltant && error != SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS &&
-                                       error != SpeechRecognizer.ERROR_NO_MATCH) {
-                startListeningAgain();
-            }
+            if (error == SpeechRecognizer.ERROR_RECOGNIZER_BUSY) {
+                speechRecognizer.stopListening();
+                speechRecognizer.cancel(); //Provem a veure si així s'atura
+                startListening();
+            } else
+                if (continuar_escoltant && error != SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS )
+                //                    && error != SpeechRecognizer.ERROR_NO_MATCH)
+                {
+                    speechRecognizer.startListening(intent);
+                }
 
         }
 
@@ -562,10 +572,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
     private void fer_ordre() {
-        Log.i("fer_ordre", "ordre rebuda ->" + ordre + "<-");
+        Log.i("fer_ordre","ordre rebuda ->"+ordre+"<-");
+        Log.i("fer_ordre", "abans de tokenitzar, tokens ->"+lexic.print_tokens()+"<-");
         lexic.tokenitzar(ordre);
+        Log.i("fer_ordre", "després de tokenitzar, tokens ->"+lexic.print_tokens()+"<-");
         if (!lexic.error) {
-            //Log.i("fer_ordre", "lexic correcte. Nombre de tokens ->" + lexic.tokens.size() + "<-");
+            Log.i("fer_ordre","lexic correcte. Nombre de tokens ->"+lexic.tokens.size()+"<-");
             if (lexic.tokens.get(0) == Constants.FINAL) finalitzar();
         }
 
@@ -581,13 +593,13 @@ public class MainActivity extends AppCompatActivity {
         String[] words = paraules.split(" ", 10);
 
         for (String w : words) {
-            //Log.i("SpeechRecognitionListen", "afegir_ordre. mot rebut ->" + w + "<-");
+            Log.i("SpeechRecognitionListen", "afegir_ordre. mot rebut ->" + w + "<-");
             if (!w.trim().isEmpty()) {
-                //Log.i("SpeechRecognitionListen", "afegir_ordre. anem a afegir ->" + w.trim() + "<-");
-                // si la paraula no existeix dins d'ordre l'afegim
+                Log.i("SpeechRecognitionListen", "afegir_ordre. anem a afegir ->" + w.trim() + "<-");
+                 //si la paraula no existeix dins d'ordre l'afegim
                 if (!ordre.contains(w.trim())) {
                     ordre = ordre + " " + w.trim();
-                    //Log.i("SpeechRecognitionListen", "afegir_ordre. ordre no conté ->" + w.trim() + "<-");
+                    Log.i("SpeechRecognitionListen", "afegir_ordre. ordre no conté ->" + w.trim() + "<-");
                 }
             }
         }
@@ -595,17 +607,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startListeningAgain() {
-        if (continuar_escoltant) {
-            // Donem temps per a evitar el "busy"
-            try {
-                Thread.sleep(500);
-            } catch (Exception e) {
-                Log.e("startListeningAgain", "error sleep", e);
+        Log.i("startListeningAgain", "Entrada. escoltant ->"+Boolean.toString(escoltant)+"<-");
+        if (!escoltant) {
+            if (continuar_escoltant) {
+                Log.i("startListeningAgain", "Anem a engegar el Listener");
+                /*  Donem temps per a evitar el "busy" - Comento el Thread.sleep ja que en principi no cal
+                try {
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                    Log.e("startListeningAgain", "error sleep", e);
+                }
+                */
+                speechRecognizer.startListening(intent);
+                //startListening();
+                Log.i("startListeningAgain", "Després del startListening");
+                escoltant = true;
             }
-
-            //speechRecognizer.startListening(intent);
-            startListening();
         }
+        Log.i("startListeningAgain", "Sortida. escoltant ->"+Boolean.toString(escoltant)+"<-");
+
     }
 
     private void fer_repetir() {

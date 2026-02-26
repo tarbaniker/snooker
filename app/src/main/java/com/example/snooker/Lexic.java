@@ -1,5 +1,6 @@
 package com.example.snooker;
 
+//import android.provider.CalendarContract;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class Lexic {
                 tokens.add(Constants.GROGA);
                 break;
             case "verda":
+            case "merda":
                 tokens.add(Constants.VERDA);
                 break;
             case "marró":
@@ -192,6 +194,81 @@ public class Lexic {
                 complet = true;
             }
         }
+    }
+
+    public String print_tokens() {
+        Log.i("Lexic","print_tokens - Inici");
+        String resultat = "";
+        for ( int i=0; i<tokens.size(); i++) {
+            switch ( tokens.get(i)) {
+                case Constants.BOLA:
+                    resultat = resultat.concat(" BOLA");
+                    break;
+                case Constants.FALTA:
+                    resultat = resultat.concat(" FALTA");
+                    break;
+                case Constants.CANVI:
+                    resultat = resultat.concat(" CANVI");
+                    break;
+                case Constants.DE:
+                    resultat = resultat.concat(" DE");
+                    break;
+                case Constants.VERMELLA:
+                    resultat = resultat.concat(" VERMELLA");
+                    break;
+                case Constants.GROGA:
+                    resultat = resultat.concat(" GROGA");
+                    break;
+                case Constants.VERDA:
+                    resultat = resultat.concat(" VERDA");
+                    break;
+                case Constants.MARRO:
+                    resultat = resultat.concat(" MARRÓ");
+                    break;
+                case Constants.BLAVA:
+                    resultat = resultat.concat(" BLAVA");
+                    break;
+                case Constants.ROSA:
+                    resultat = resultat.concat(" ROSA");
+                    break;
+                case Constants.NEGRA:
+                    resultat = resultat.concat(" NEGRA");
+                    break;
+                case Constants.QUATRE:
+                    resultat = resultat.concat(" QUATRE");
+                    break;
+                case Constants.CINC:
+                    resultat = resultat.concat(" CINC");
+                    break;
+                case Constants.SIS:
+                    resultat = resultat.concat(" SIS");
+                    break;
+                case Constants.SET:
+                    resultat = resultat.concat(" SET");
+                    break;
+                case Constants.JUGADOR:
+                    resultat = resultat.concat(" JUGADOR");
+                    break;
+                case Constants.ENRIC:
+                    resultat = resultat.concat(" ENRIC");
+                    break;
+                case Constants.FRANCESC:
+                    resultat = resultat.concat(" FRANCESC");
+                    break;
+                case Constants.JOSEP:
+                    resultat = resultat.concat(" JOSEP");
+                    break;
+                case Constants.FINAL:
+                    resultat = resultat.concat(" FINAL");
+                    break;
+                default:
+                    resultat = resultat.concat(" ***");
+                    break;
+            }
+
+        }
+        Log.i("Lexic","print_tokens - Final retornarà ->"+resultat+"<-");
+        return (resultat.trim());
     }
 
 }
