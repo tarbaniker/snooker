@@ -167,6 +167,9 @@ public class MainActivity extends AppCompatActivity {
     private void finalitzar() {
         Log.i("finalitzar", "Hem detectat la paraula final");
 
+        // tanquem el fitxer del frame
+        el_frame.Tancar();
+
         // - primer donem les gràcies per utilitzar el programa
         continuar_escoltant = false;
 
@@ -176,9 +179,6 @@ public class MainActivity extends AppCompatActivity {
 
         String text = "Final. Gràcies per utilitzar aquesta aplicació.";
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-
-        // tanquem el fitxer del frame
-        // el_frame.Tancar();
 
         // Donem temps a sentir el missatge final
         try {
@@ -577,7 +577,10 @@ public class MainActivity extends AppCompatActivity {
         Log.i("fer_ordre", "després de tokenitzar, tokens ->"+lexic.print_tokens()+"<-");
         if (!lexic.error) {
             Log.i("fer_ordre","lexic correcte. Nombre de tokens ->"+lexic.tokens.size()+"<-");
-            if (lexic.tokens.get(0) == Constants.FINAL) finalitzar();
+            if (lexic.tokens.get(0) == Constants.FINAL) {
+                finalitzar();
+                return;
+            }
         }
 
         //aquí cal fer l'ordre rebuda -
