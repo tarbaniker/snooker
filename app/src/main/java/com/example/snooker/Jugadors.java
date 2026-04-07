@@ -9,12 +9,16 @@ public class Jugadors {
     String[] nomJugador = { null, null};
 
     private static final int[] punts = {0, 0};
+    private static final int[] maxim = {0, 0};
     private static int entrada = 0;
     private static int jugadorActual = 0;
 
     public void sumar_punts(int quants) {
         entrada = entrada + quants;
         punts[jugadorActual] = punts[jugadorActual] + quants;
+        if (punts[jugadorActual] > maxim[jugadorActual]) {
+            maxim[jugadorActual] = punts[jugadorActual];
+        }
     }
 
     public void sumar_falta(int quants) {
@@ -58,6 +62,14 @@ public class Jugadors {
 
     public int getPuntsJugador() {
         return punts[jugadorActual];
+    }
+
+    public int getMaximJugador(int jugador) { // Espera que el jugador sigui 1 o 2
+        if (jugador == 1 || jugador == 2) {
+        return maxim[jugador -1];
+        } else {
+            return -1;
+        }
     }
 
     public int getPuntsJugador(int jugador) { // Espera que el jugador sigui 1 o 2

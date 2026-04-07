@@ -167,6 +167,11 @@ public class MainActivity extends AppCompatActivity {
     private void finalitzar() {
         Log.i("finalitzar", "Hem detectat la paraula final");
 
+        // Apuntem màxims al fitxer del frame
+        el_frame.EscriurePunts(els_jugadors.nomJugador, els_jugadors.getMaximJugador(1), els_jugadors.getMaximJugador(2));
+        // Apuntem punts al fitxer del frame
+        el_frame.EscriurePunts(els_jugadors.nomJugador, els_jugadors.getPuntsJugador(1), els_jugadors.getPuntsJugador(2));
+
         // tanquem el fitxer del frame
         el_frame.Tancar();
 

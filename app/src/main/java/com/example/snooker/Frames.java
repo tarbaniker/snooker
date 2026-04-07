@@ -52,4 +52,18 @@ public class Frames {
         }
 
     }
+
+    public void EscriureMaxim(String [] Jugadors, int punts1, int punts2) {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        String formattedDate = sdf.format(date);
+
+        Log.i("Frames","escrivim al fitxer amb timestamp ->"+formattedDate+"<--");
+        try {
+            outputStreamWriter.write(formattedDate+"; Màxims ;"+Jugadors[0]+";"+punts1+";"+Jugadors[1]+";"+punts2+"\n");
+            outputStreamWriter.flush();
+        } catch (IOException e) {
+            Log.e("Exception", "Error a l'escriure fitxer: " + e);
+        }
+    }
 }
