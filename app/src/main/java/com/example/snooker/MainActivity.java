@@ -142,12 +142,12 @@ public class MainActivity extends AppCompatActivity {
         Log.i("startListening", "Inici");
 
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.forLanguageTag("ca-ES"));
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.forLanguageTag("ca-AD"));
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
 
-        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3000L);
-        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 5000L);
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+        //intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 3000L);
+        //intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 5000L);
 
         //intent.putExtra(RecognizerIntent.EXTRA_SEGMENTED_SESSION, TRUE);
         //intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1500);
@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onResults(Bundle results) {
+            escoltant = false;
             resultats_trobats = true;
             if (!results_ant.isEmpty()) {
                 Log.i("onResults", "onResults. results_ant no està buit");
@@ -398,22 +399,26 @@ public class MainActivity extends AppCompatActivity {
             }
             Log.i("SpeechRecognitionListen", "Error: " + error + " - " + mError);
 
-            // Donem temps per a evitar el "busy"
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                Log.e("onError", "error sleep", e);
-            }
+
 
             if (error == SpeechRecognizer.ERROR_RECOGNIZER_BUSY) {
+                // Donem temps per a evitar el "busy"
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    Log.e("onError", "error sleep", e);
+                }
                 speechRecognizer.stopListening();
                 speechRecognizer.cancel(); //Provem a veure si així s'atura
                 speechRecognizer.startListening(intent);
-            } else if (continuar_escoltant && error != SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS)
+            } else
+                if (continuar_escoltant && error != SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS)
             //                    && error != SpeechRecognizer.ERROR_NO_MATCH)
-            {
-                speechRecognizer.startListening(intent);
-            }
+                {
+                    //speechRecognizer.startListening(intent);
+                    escoltant = false;
+                    startListeningAgain();
+                }
 
         }
 
