@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Snooker</string>
+    <string name="jugador_1">Jugador 1</string>
+    <string name="jugador_2">Jugador 2</string>
+    <string name="hola">Hola jugadors!</string>
+    <string name="hint">...</string>
+    <string name="jugador_a_taula">Jugador a taula: </string>
+    <string name="inici">Comença el freim. Trenca el jugador </string>
 </resources>

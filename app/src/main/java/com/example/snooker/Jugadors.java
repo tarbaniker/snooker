@@ -16,8 +16,8 @@ public class Jugadors {
     public void sumar_punts(int quants) {
         entrada = entrada + quants;
         punts[jugadorActual] = punts[jugadorActual] + quants;
-        if (punts[jugadorActual] > maxim[jugadorActual]) {
-            maxim[jugadorActual] = punts[jugadorActual];
+        if (entrada > maxim[jugadorActual]) {
+            maxim[jugadorActual] = entrada;
         }
     }
 
