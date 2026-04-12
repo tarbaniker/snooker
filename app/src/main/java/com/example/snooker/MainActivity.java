@@ -53,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean continuar_escoltant = true;
     private boolean buidar_buffer = false;
     private boolean escoltant = true;
+    private boolean repetint = false;
+
+    private final LogIt logIt = new LogIt();
 
     private final Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     // Variable/s per a guardar paraules rebudes per onResults i onPartialResults
@@ -82,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Creem els jugadors
         els_jugadors = new Jugadors();
-        Log.i("Inici jugadors", "Jugador actual ->" + els_jugadors.nom_jugador() + "<- Punts jugador ->" + els_jugadors.getPuntsJugador() + "<-");
+        LogIt.i("Inici jugadors", "Jugador actual ->" + els_jugadors.nom_jugador() + "<- Punts jugador ->" + els_jugadors.getPuntsJugador() + "<-");
 
         Reproductor el_reproductor = new Reproductor();
         // Sonen els aplaudiments
@@ -91,10 +94,12 @@ public class MainActivity extends AppCompatActivity {
 
         lexic = new Lexic();
 
+        logIt.setFerLog(true);  //Si li passem true LogIt.i farà Log.i , si li passem false no farà res
+
     }
 
     private void onInit(int status) {
-        Log.i("onInit", "inici");
+        LogIt.i("onInit", "inici");
         //resultats_parcials = false;
         if (status == TextToSpeech.SUCCESS) {
             int result = textToSpeech.setLanguage(Locale.forLanguageTag("ca-ES"));
@@ -124,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         // el_frame.Tancar();
 
         String text = getString(R.string.inici) + els_jugadors.nom_jugador();
-        Log.i("String.inici","->"+getString(R.string.inici)+"<-");
+        LogIt.i("String.inici","->"+getString(R.string.inici)+"<-");
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
 
         // Donem temps a sentir el missatge inicial
@@ -141,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("UnsafeOptInUsageError")
     private void startListening() {
-        Log.i("startListening", "Inici");
+        LogIt.i("startListening", "Inici");
 
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.forLanguageTag("ca-AD"));
@@ -151,14 +156,14 @@ public class MainActivity extends AppCompatActivity {
 
         speechRecognizer.startListening(intent);
         // startActivityForResult(intent, 1); //Aquesta instrucció fa aparèixer l'aplicació de reconeixement de veu de GOOGLE
-        Log.i("startListening", "Després de speechRecognizer");
+        LogIt.i("startListening", "Després de speechRecognizer");
         escoltant = true;
 
     }
 
 
     private void finalitzar() {
-        Log.i("finalitzar", "Hem detectat la paraula final");
+        LogIt.i("finalitzar", "Hem detectat la paraula final");
 
         // Apuntem punts al fitxer del frame
         el_frame.EscriurePunts(els_jugadors.nomJugador, els_jugadors.getPuntsJugador(1), els_jugadors.getPuntsJugador(2));
@@ -205,18 +210,19 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onResults(Bundle results) {
+            LogIt.i("onResults","repetint ->"+repetint+"<-");
             escoltant = false;
             resultats_trobats = true;
             if (!results_ant.isEmpty()) {
-                Log.i("onResults", "onResults. results_ant no està buit");
-                Log.i("onResults", "onResults. results_ant.size() ->" + results_ant.size() + "<- "
+                LogIt.i("onResults", "onResults. results_ant no està buit");
+                LogIt.i("onResults", "onResults. results_ant.size() ->" + results_ant.size() + "<- "
                         + " results.size() ->" + results.size() + "<-");
                 if (results_ant.size() > results.size()) return;
                 ArrayList<String> matches_ant = results_ant.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 assert matches_ant != null;
                 assert matches != null;
-                Log.i("onResults", "onResults longituds: matches_ant ->" + matches_ant.get(0).length()
+                LogIt.i("onResults", "onResults longituds: matches_ant ->" + matches_ant.get(0).length()
                         + "<- matches ->" + matches.get(0).length() + "<-");
                 if (matches_ant.get(0).length() > matches.get(0).length()) {
                     return;
@@ -224,17 +230,17 @@ public class MainActivity extends AppCompatActivity {
             }
             results_ant = results;
 
-            Log.i("onResults", "onResults, results -> " + results + "<-");
+            LogIt.i("onResults", "onResults, results -> " + results + "<-");
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            Log.i("onResults", "onResults, abans de guardar, matches ->" + matches + "<-");
+            LogIt.i("onResults", "onResults, abans de guardar, matches ->" + matches + "<-");
             assert matches != null;
             if (matches.get(0).isEmpty()) inici_text = 0; // Potser caldrà preguntar si és nul
-            Log.i("onResults", "onResults, abans de guardar" + " inici_text ->" + inici_text + "<-");
-            Log.i("onResults", "onResults, abans de guardar, matches ->"
+            LogIt.i("onResults", "onResults, abans de guardar" + " inici_text ->" + inici_text + "<-");
+            LogIt.i("onResults", "onResults, abans de guardar, matches ->"
                     + matches.get(0).substring(inici_text) + "<-"
                     + " inici_text ->" + inici_text + "<-");
 
-            Log.i("onResults", "onResults, ordre ->" + ordre + "<-");
+            LogIt.i("onResults", "onResults, ordre ->" + ordre + "<-");
             if (!matches.get(0).substring(inici_text).isEmpty()) {
                 if (!buidar_buffer) {
                     afegir_ordre(matches.get(0).substring(inici_text));
@@ -256,9 +262,12 @@ public class MainActivity extends AppCompatActivity {
                     if (continuar_escoltant) {
                         startListeningAgain();
                     }
-                } else inici_text = matches.get(0).length();
+                } else {
+                    inici_text = matches.get(0).length();
+                    buidar_buffer = false;
+                }
             } else buidar_buffer = false;
-            Log.i("onResults", "continuar_escoltant ->" + continuar_escoltant + "<- " +
+            LogIt.i("onResults", "continuar_escoltant ->" + continuar_escoltant + "<- " +
                     "buidar_buffer ->" + buidar_buffer + "<- ");
 
             if (continuar_escoltant) {
@@ -269,18 +278,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onPartialResults(Bundle partialResults) {
-
+            LogIt.i("onPartialResults","repetint ->"+repetint+"<-");
             if (!resultats_trobats) {
                 if (!results_ant.isEmpty()) {
-                    Log.i("onPartialResults", "onPartialResults. results_ant no està buit");
-                    Log.i("onPartialResults", "onPartialResults. results_ant.size() ->" + results_ant.size() + "<- "
+                    LogIt.i("onPartialResults", "onPartialResults. results_ant no està buit");
+                    LogIt.i("onPartialResults", "onPartialResults. results_ant.size() ->" + results_ant.size() + "<- "
                             + " partialResulta.size() ->" + partialResults.size() + "<-");
                     if (results_ant.size() > partialResults.size()) return;
                     ArrayList<String> matches_ant = results_ant.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                     ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                     assert matches_ant != null;
                     assert matches != null;
-                    Log.i("onPartialResults", "onPartialResults longituds: matches_ant ->" + matches_ant.get(0).length()
+                    LogIt.i("onPartialResults", "onPartialResults longituds: matches_ant ->" + matches_ant.get(0).length()
                             + "<- matches ->" + matches.get(0).length() + "<-");
                     if (matches_ant.get(0).length() > matches.get(0).length()) {
                         return;
@@ -296,17 +305,17 @@ public class MainActivity extends AppCompatActivity {
 
             results_ant = partialResults;
 
-            Log.i("onPartialResults", "onPartialResults -->" + partialResults + "<--");
+            LogIt.i("onPartialResults", "onPartialResults -->" + partialResults + "<--");
             ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            Log.i("onPartialResults", "onPartialResults, abans de guardar matches ->" + matches + "<-");
+            LogIt.i("onPartialResults", "onPartialResults, abans de guardar matches ->" + matches + "<-");
             assert matches != null;
             if (matches.get(0).isEmpty()) inici_text = 0; // Potser caldrà preguntar si és nul
-            Log.i("onPartialResults", "onPartialResults, abans de guardar" + " inici_text ->" + inici_text + "<-");
-            Log.i("onPartialResults", "onPartialResults, abans de guardar, matches ->"
+            LogIt.i("onPartialResults", "onPartialResults, abans de guardar" + " inici_text ->" + inici_text + "<-");
+            LogIt.i("onPartialResults", "onPartialResults, abans de guardar, matches ->"
                     + matches.get(0).substring(inici_text) + "<-"
                     + " inici_text ->" + inici_text + "<-");
             // Guardem les paraules rebudes
-            Log.i("onPartialResults", "onPartialResults, ordre ->" + ordre + "<-");
+            LogIt.i("onPartialResults", "onPartialResults, ordre ->" + ordre + "<-");
             if (!matches.get(0).substring(inici_text).isEmpty()) {
                 if (!buidar_buffer) {
                     afegir_ordre(matches.get(0).substring(inici_text));
@@ -321,42 +330,45 @@ public class MainActivity extends AppCompatActivity {
                     if (lexic.error) {
                         fer_repetir();
                     }
-                } else inici_text = matches.get(0).length();
+                } else {
+                    inici_text = matches.get(0).length();
+                    buidar_buffer = false;
+                }
             } else buidar_buffer = false;
         }
 
         // Implement other required methods with empty bodies
         @Override
         public void onReadyForSpeech(Bundle params) {
-            Log.i("SpeechRecognitionListen", "onReadyForSpeech " + params);
+            LogIt.i("SpeechRecognitionListen", "onReadyForSpeech " + params);
         }
 
         @Override
         public void onBeginningOfSpeech() {
-            Log.i("SpeechRecognitionListen", "onBeginningOfSpeech");
+            LogIt.i("SpeechRecognitionListen", "onBeginningOfSpeech");
         }
 
         @Override
         public void onRmsChanged(float rmsdB) {
-            /* Log.i("SpeechRecognitionListen","onRmsChanged float value "+ rmsdB); */
+            /* LogIt.i("SpeechRecognitionListen","onRmsChanged float value "+ rmsdB); */
         }
 
         @Override
         public void onBufferReceived(byte[] buffer) {
-            Log.i("SpeechRecognitionListen", "onBufferReceived -->" + Arrays.toString(buffer) + "<--");
+            LogIt.i("SpeechRecognitionListen", "onBufferReceived -->" + Arrays.toString(buffer) + "<--");
         }
 
         @Override
         public void onEndOfSpeech() {
             escoltant = false;
-            Log.i("onEndOfSpeech", "Entrada. continuar_escoltant = ->" + continuar_escoltant + "<-");
+            LogIt.i("onEndOfSpeech", "Entrada. continuar_escoltant = ->" + continuar_escoltant + "<-");
 
-            Log.i("onEndOfSpeech", "Sortida");
+            LogIt.i("onEndOfSpeech", "Sortida");
         }
 
         @Override
         public void onError(int error) {
-            Log.i("SpeechRecognitionListen", "onError");
+            LogIt.i("SpeechRecognitionListen", "onError");
             Log.e("SpeechRecognitionListen", "onError " + error);
 
             String mError;
@@ -394,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
                     mError = "Unexpected value";
                     break;
             }
-            Log.i("SpeechRecognitionListen", "Error: " + error + " - " + mError);
+            LogIt.i("SpeechRecognitionListen", "Error: " + error + " - " + mError);
 
 
 
@@ -422,13 +434,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onEvent(int eventType, Bundle params) {
-            Log.i("SpeechRecognitionListen", "onEvent -->" + params + "<--");
+            LogIt.i("SpeechRecognitionListen", "onEvent -->" + params + "<--");
         }
 
     }
 
     private void parsingOrdre() {
-        //Log.i("parsingOrdre", "analitzem paraules rebudes a lexic.tokens.");
+        //LogIt.i("parsingOrdre", "analitzem paraules rebudes a lexic.tokens.");
         //Analitzem l'ordre rebuda a lexic.tokens
 
         //resultats_parcials = false;
@@ -436,9 +448,56 @@ public class MainActivity extends AppCompatActivity {
         String text = "";
         String jugador_contrari = els_jugadors.nom_jugador_contrari();
 
-        if ( lexic.tokens.get(0) == Constants.BOLA ) {
+        if ( lexic.tokens.get(0) == Constants.FALTA ) {
+            falta = true;
 
-            switch (lexic.tokens.get(1)) {
+            switch (lexic.tokens.get(2)) {
+                case Constants.QUATRE:
+                    //fer falta de 4
+                    text = "falta, " + jugador_contrari + " 4 punts. " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
+                            + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
+                    els_jugadors.sumar_falta(4);
+                    break;
+                case Constants.CINC:
+                    //fer falta de 5
+                    text = "falta, " + jugador_contrari + " 5 punts. " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
+                            + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
+                    els_jugadors.sumar_falta(5);
+                    break;
+                case Constants.SIS:
+                    //fer falta de 6
+                    text = "falta, " + jugador_contrari + " 6 punts. " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
+                            + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
+                    els_jugadors.sumar_falta(6);
+                    break;
+                case Constants.SET:
+                    //fer falta de 7
+                    text = "falta, " + jugador_contrari + " 7 punts. " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
+                            + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
+                    els_jugadors.sumar_falta(7);break;
+                default:
+                    Log.e("parsingOrdre", "Falta. Error en els tokens. No hauria de passar mai!");
+                    text = "Falta. Error en els tokens. No hauria de passar mai!";
+                    break;
+            }
+        }
+        if ( lexic.tokens.get(0) == Constants.CANVI ) {
+            LogIt.i("ParsingOrdre", "Detectat CANVI");
+            //fer canvi
+            text = "Jugador " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
+                    + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
+            els_jugadors.canviar_jugador();
+            text = text + "Entra jugador " + els_jugadors.nom_jugador();
+
+            // Apuntem punts al fitxer del frame
+            el_frame.EscriurePunts(els_jugadors.nomJugador, els_jugadors.getPuntsJugador(1), els_jugadors.getPuntsJugador(2));
+
+            tJugador.setText(String.format("%s%s", getString(R.string.jugador_a_taula), els_jugadors.nom_jugador()));
+        }
+
+        if ( lexic.tokens.get(0) != Constants.FALTA && lexic.tokens.get(0) != Constants.CANVI ) {
+
+            switch (lexic.tokens.get(0)) {
                 case Constants.VERMELLA:
                     //fer vermella
                     els_jugadors.sumar_punts(1);
@@ -481,52 +540,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
-        if ( lexic.tokens.get(0) == Constants.FALTA ) {
-            falta = true;
-
-            switch (lexic.tokens.get(2)) {
-                case Constants.QUATRE:
-                    //fer falta de 4
-                    text = "falta, " + jugador_contrari + " 4 punts. " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
-                            + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
-                    els_jugadors.sumar_falta(4);
-                    break;
-                case Constants.CINC:
-                    //fer falta de 5
-                    text = "falta, " + jugador_contrari + " 5 punts. " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
-                            + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
-                    els_jugadors.sumar_falta(5);
-                    break;
-                case Constants.SIS:
-                    //fer falta de 6
-                    text = "falta, " + jugador_contrari + " 6 punts. " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
-                            + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
-                    els_jugadors.sumar_falta(6);
-                    break;
-                case Constants.SET:
-                    //fer falta de 7
-                    text = "falta, " + jugador_contrari + " 7 punts. " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
-                            + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
-                    els_jugadors.sumar_falta(7);break;
-                default:
-                    Log.e("parsingOrdre", "Falta. Error en els tokens. No hauria de passar mai!");
-                    text = "Falta. Error en els tokens. No hauria de passar mai!";
-                    break;
-            }
-        }
-        if ( lexic.tokens.get(0) == Constants.CANVI ) {
-            Log.i("ParsingOrdre", "Detectat CANVI");
-            //fer canvi
-            text = "Jugador " + els_jugadors.nom_jugador() + els_jugadors.getEntrada()
-                    + (els_jugadors.getEntrada() > 1 ? " punts." : "punt.");
-            els_jugadors.canviar_jugador();
-            text = text + "Entra jugador " + els_jugadors.nom_jugador();
-
-            // Apuntem punts al fitxer del frame
-            el_frame.EscriurePunts(els_jugadors.nomJugador, els_jugadors.getPuntsJugador(1), els_jugadors.getPuntsJugador(2));
-
-            tJugador.setText(String.format("%s%s", getString(R.string.jugador_a_taula), els_jugadors.nom_jugador()));
-        }
         // actualitzem comptadors
         tJugador1.setText(String.format(Locale.forLanguageTag("ca-ES"), "%s %d", els_jugadors.nom_jugador(1), els_jugadors.getPuntsJugador(1)));
         tJugador2.setText(String.format(Locale.forLanguageTag("ca-ES"), "%s %d", els_jugadors.nom_jugador(2), els_jugadors.getPuntsJugador(2)));
@@ -551,14 +564,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fer_ordre() {
-        Log.i("fer_ordre","ordre rebuda ->"+ordre+"<-");
+        LogIt.i("fer_ordre","ordre rebuda ->"+ordre+"<-");
 
-        Log.i("fer_ordre", "abans de tokenitzar, tokens ->"+lexic.print_tokens()+"<-");
+        LogIt.i("fer_ordre", "abans de tokenitzar, tokens ->"+lexic.print_tokens()+"<-");
         lexic.tokenitzar(ordre);
-        Log.i("fer_ordre", "després de tokenitzar, tokens ->"+lexic.print_tokens()+"<-");
+        LogIt.i("fer_ordre", "després de tokenitzar, tokens ->"+lexic.print_tokens()+"<-");
         if (!lexic.error) {
             tJugador.setText(String.format("%s", lexic.print_tokens()));
-            Log.i("fer_ordre","lexic correcte. Nombre de tokens ->"+lexic.tokens.size()+"<-");
+            LogIt.i("fer_ordre","lexic correcte. Nombre de tokens ->"+lexic.tokens.size()+"<-");
             if (lexic.tokens.get(0) == Constants.FINAL) {
                 finalitzar();
                 return;
@@ -578,13 +591,13 @@ public class MainActivity extends AppCompatActivity {
         String[] words = paraules.split(" ", 10);
 
         for (String w : words) {
-            Log.i("SpeechRecognitionListen", "afegir_ordre. mot rebut ->" + w + "<-");
+            LogIt.i("SpeechRecognitionListen", "afegir_ordre. mot rebut ->" + w + "<-");
             if (!w.trim().isEmpty()) {
-                Log.i("SpeechRecognitionListen", "afegir_ordre. anem a afegir ->" + w.trim() + "<-");
+                LogIt.i("SpeechRecognitionListen", "afegir_ordre. anem a afegir ->" + w.trim() + "<-");
                  //si la paraula no existeix dins d'ordre l'afegim
                 if (!ordre.contains(w.trim())) {
                     ordre = ordre + " " + w.trim();
-                    Log.i("SpeechRecognitionListen", "afegir_ordre. ordre no conté ->" + w.trim() + "<-");
+                    LogIt.i("SpeechRecognitionListen", "afegir_ordre. ordre no conté ->" + w.trim() + "<-");
                 }
             }
         }
@@ -592,10 +605,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startListeningAgain() {
-        Log.i("startListeningAgain", "Entrada. escoltant ->"+ escoltant +"<-");
+        LogIt.i("startListeningAgain", "Entrada. escoltant ->"+ escoltant +"<-");
         if (!escoltant) {
             if (continuar_escoltant) {
-                Log.i("startListeningAgain", "Anem a engegar el Listener");
+                LogIt.i("startListeningAgain", "Anem a engegar el Listener");
                 /*  Donem temps per a evitar el "busy" - Comento el Thread.sleep ja que en principi no cal
                 try {
                     Thread.sleep(500);
@@ -605,32 +618,33 @@ public class MainActivity extends AppCompatActivity {
                 */
                 speechRecognizer.startListening(intent);
                 //startListening();
-                Log.i("startListeningAgain", "Després del startListening");
+                LogIt.i("startListeningAgain", "Després del startListening");
                 escoltant = true;
             }
         }
-        Log.i("startListeningAgain", "Sortida. escoltant ->"+ escoltant +"<-");
+        LogIt.i("startListeningAgain", "Sortida. escoltant ->"+ escoltant +"<-");
 
     }
 
     private void fer_repetir() {
 
-        Log.i("fer_repetir","Entrada");
+        LogIt.i("fer_repetir","Entrada");
 
         lexic.reset();
         buidar_buffer = true;
+        repetint = true;
 
         String text = "Si us plau, repeteix";
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
 
         // Donem temps a sentir el missatge
         try {
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            Log.e("fer_repetir", "error sleep", e);
-        }
-        //startListeningAgain();
-        Log.i("fer_repetir","Sortida");
+                Thread.sleep(3000);
+            } catch (Exception e) {
+                Log.e("fer_repetir", "error sleep", e);
+            }
+        startListeningAgain();
+        LogIt.i("fer_repetir","Sortida");
 
     }
 }

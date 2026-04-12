@@ -1,10 +1,13 @@
 package com.example.snooker;
 
 //import android.provider.CalendarContract;
-import android.util.Log;
 
 import java.util.ArrayList;
 
+/*
+    A partir del 12/04/26 eliminem la paraula BOLA
+    Es seguirà reconeixent però ja no s'esperarà la paraula BOLA abans dels colors
+ */
 public class Lexic {
     public ArrayList<Integer> tokens = new ArrayList<>();
     public Boolean complet = false;
@@ -13,7 +16,7 @@ public class Lexic {
 
     public void reset() {   // Per inicialitzar la llista de tokens
             tokens.clear();
-            Log.i("Lexic","tokens després del clear() ->"+tokens+"<-");
+            LogIt.i("Lexic","tokens després del clear() ->"+tokens+"<-");
     }
     private void afegir(String mot) {     // Per afegir a la llista de tokens les paraules detectades
         switch (mot) {
@@ -84,7 +87,7 @@ public class Lexic {
                 tokens.add(Constants.FINAL);
                 break;
             default:
-                Log.i("Lexic", "Paraula no reconeguda ->" + mot + "<-");
+                LogIt.i("Lexic", "Paraula no reconeguda ->" + mot + "<-");
                 error =true;
                 complet = true;
                 break;
@@ -93,7 +96,7 @@ public class Lexic {
     }
 
     public void tokenitzar(String resultats) {
-        Log.i("Lexic","tokenitzar. resultats rebut ->"+resultats+"<-");
+        LogIt.i("Lexic","tokenitzar. resultats rebut ->"+resultats+"<-");
         reset();
         complet = false;
         error = false;
@@ -102,49 +105,44 @@ public class Lexic {
         String[] words = resultats.split(" ", 10);
 
         for (String w : words) {
-            Log.i("Lexic", "tokenitzar. dins del for. mot extret ->" + w + "<-");
+            LogIt.i("Lexic", "tokenitzar. dins del for. mot extret ->" + w + "<-");
             if ( !w.trim().isEmpty()) {
-                Log.i("Lexic","tokenitzar. anem a afegir ->"+w.trim()+"<-");
+                LogIt.i("Lexic","tokenitzar. anem a afegir ->"+w.trim()+"<-");
                 afegir(w.trim());
             }
         }
         if (!error) {
-            Log.i("Lexic","tokenitzar. no hi ha error anem a analitzar");
+            LogIt.i("Lexic","tokenitzar. no hi ha error anem a analitzar");
             analitzar();
         }
-        else Log.i("Lexic","tokenitzar. hi ha error");
+        else LogIt.i("Lexic","tokenitzar. hi ha error");
     }
     private void analitzar() {
-    if ( !tokens.isEmpty() ) {
-        if ( ( tokens.get(0) == Constants.BOLA ) ) fer_bola();
-        else if ( (tokens.get(0) == Constants.FALTA) ) fer_falta();
-        else if ( (tokens.get(0) == Constants.CANVI) ) fer_canvi();
-        else if ( (tokens.get(0) == Constants.FINAL )) fer_final();
-        else if ( (tokens.get(0) == Constants.JUGADOR) ) fer_jugador();
-        else {
-            reset();
-            error = true;
-            complet = true;
-            }
+
+        if ( !tokens.isEmpty() )
+        {
+                 if ((tokens.get(0) == Constants.FALTA)) fer_falta();
+            else if ((tokens.get(0) == Constants.CANVI)) fer_canvi();
+            else if ((tokens.get(0) == Constants.FINAL)) fer_final();
+            else if ((tokens.get(0) == Constants.JUGADOR)) fer_jugador();
+            else fer_bola();
         }
-    else Log.i("Lexic","analitzar. tokens està buit");
+        else LogIt.i("Lexic","analitzar. tokens està buit");
+
     }
     private void fer_bola() {
-        if ( tokens.size() > 1) {
-            if ((tokens.get(1) == Constants.VERMELLA) ||
-                    (tokens.get(1) == Constants.GROGA) ||
-                    (tokens.get(1) == Constants.VERDA) ||
-                    (tokens.get(1) == Constants.MARRO) ||
-                    (tokens.get(1) == Constants.BLAVA) ||
-                    (tokens.get(1) == Constants.ROSA) ||
-                    (tokens.get(1) == Constants.NEGRA)
-            ) {
-                complet = true;
-            } else {
-                error = true;
-                complet = true;
-            }
+
+        if ((tokens.get(0) != Constants.VERMELLA) &&
+                (tokens.get(0) != Constants.GROGA) &&
+                (tokens.get(0) != Constants.VERDA) &&
+                (tokens.get(0) != Constants.MARRO) &&
+                (tokens.get(0) != Constants.BLAVA) &&
+                (tokens.get(0) != Constants.ROSA) &&
+                (tokens.get(0) != Constants.NEGRA)) {
+            error = true;
         }
+        complet = true;
+
     }
 
     private void fer_jugador() {
@@ -197,7 +195,7 @@ public class Lexic {
     }
 
     public String print_tokens() {
-        Log.i("Lexic","print_tokens - Inici");
+        LogIt.i("Lexic","print_tokens - Inici");
         String resultat = "";
         for ( int i=0; i<tokens.size(); i++) {
             switch ( tokens.get(i)) {
@@ -267,7 +265,7 @@ public class Lexic {
             }
 
         }
-        Log.i("Lexic","print_tokens - Final retornarà ->"+resultat+"<-");
+        LogIt.i("Lexic","print_tokens - Final retornarà ->"+resultat+"<-");
         return (resultat.trim());
     }
 
