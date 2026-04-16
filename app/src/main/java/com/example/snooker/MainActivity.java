@@ -54,34 +54,30 @@ public class MainActivity extends AppCompatActivity {
     private boolean buidar_buffer = false;
     private boolean escoltant = true;
     private boolean repetint = false;
-
     private final LogIt logIt = new LogIt();
 
     private final Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
     // Variable/s per a guardar paraules rebudes per onResults i onPartialResults
     private String ordre = "";
 
+    // Objecte de classe PujarFitxer
+    private PujarFitxer pujador;
+
+    private boolean loginOK = false;
+    private String loginEmail;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        context = this;
+
+        pujador = new PujarFitxer(this);
+
         tJugador = findViewById(R.id.jugador);
         tJugador1 = findViewById(R.id.jugador1);
         tJugador2 = findViewById(R.id.jugador2);
-
-        // Initialize SpeechRecognizer
-        // speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
-        speechRecognizer.setRecognitionListener(new SpeechRecognitionListener());
-
-        // Initialize TextToSpeech
-        textToSpeech = new TextToSpeech(this, this::onInit);
-
-        // Set button click listeners
-        //btnSpeak.setOnClickListener(this.startListening());
-
-        // btnListen.setOnClickListener(this::speak);
-        //btnListen.setOnClickListener(this.finalitzar());
 
         // Creem els jugadors
         els_jugadors = new Jugadors();
@@ -89,17 +85,44 @@ public class MainActivity extends AppCompatActivity {
 
         Reproductor el_reproductor = new Reproductor();
         // Sonen els aplaudiments
-        context = this;
         el_reproductor.reproduir(context, R.raw.applausecheer236786, 6500);
+
+        // Initialize SpeechRecognizer
+        // speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new SpeechRecognitionListener());
+
+        // Initialize TextToSpeech
+        textToSpeech = new TextToSpeech(context, this::onInit);
 
         lexic = new Lexic();
 
         logIt.setFerLog(true);  //Si li passem true LogIt.i farà Log.i , si li passem false no farà res
 
+        if (!loginOK)
+        //anem a identificar-nos amb l'usuari Google
+        Log.i("onCreate","Anem a identificar-nos amb l'usuari Google...");
+        pujador.signInWithGoogle(new PujarFitxer.OnSignInListener() {
+            @Override
+            public void onSignInSuccess(String email) {
+                // This code runs ONLY after the credential manager finishes
+                loginOK = true;
+                loginEmail = email;
+                Log.i("onCreate", "Login OK");
+                //pujador.uploadFileToDrive(email);
+            }
+            @Override
+            public void onSignInFailure(String error) {
+                // Handle error
+                Log.e("Main", "Login failed: " + error);
+            }
+
+        });
+
     }
 
     private void onInit(int status) {
         LogIt.i("onInit", "inici");
+
         //resultats_parcials = false;
         if (status == TextToSpeech.SUCCESS) {
             int result = textToSpeech.setLanguage(Locale.forLanguageTag("ca-ES"));
@@ -179,6 +202,10 @@ public class MainActivity extends AppCompatActivity {
         speechRecognizer.stopListening();
         // si no va, provarem amb el mètode "cancel"
         speechRecognizer.cancel();
+
+        if (loginOK) pujador.uploadFileToDrive(loginEmail);
+        else Log.i("finalitzar", "No s'ha pogut pujar el fitxer");
+
 
         String text = "Final. Gràcies per utilitzar aquesta aplicació.";
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);

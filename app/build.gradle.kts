@@ -3,12 +3,22 @@ plugins {
 }
 
 android {
+
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("/home/enric/.android/debug.jks")
+            storePassword = "android"
+            keyPassword = "android"
+            keyAlias = "androiddebugkey"
+        }
+    }
+
     namespace = "com.example.snooker"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.snooker"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -29,6 +39,12 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 dependencies {
@@ -38,7 +54,12 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.credentials)
+    implementation(libs.play.services.auth)
     implementation(libs.googleid)
+    implementation(libs.google.api.client.android)
+    implementation(libs.google.api.client)
+    implementation(libs.google.api.services.drive)
+    implementation(libs.google.http.client.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
