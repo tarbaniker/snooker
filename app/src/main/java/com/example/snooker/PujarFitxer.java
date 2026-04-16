@@ -195,9 +195,8 @@ public class PujarFitxer {
                         //.setApplicationName("ProvaGoogle")
                         .setApplicationName("Snooker")
                         .build();
-
+/*
                 // Preparar fitxer temporal
-
                 java.io.File tempFile = new java.io.File(activity.getCacheDir(), "upload.txt");
                 try (InputStream is = activity.getResources().openRawResource(R.raw.provesgoogledrive);
                      FileOutputStream os = new FileOutputStream(tempFile)) {
@@ -207,7 +206,7 @@ public class PujarFitxer {
                         os.write(buffer, 0, read);
                     }
                 }
-
+*/
                 String folderId = "1UJ6V3TXhzsurtQJEgNx28dJ0PF3jtPOi";  // ID de la carpeta Snooker
 
                 Date date = new Date();
@@ -215,9 +214,10 @@ public class PujarFitxer {
                 String data_fitxer = fds.format(date);
 
                 File fileMetadata = new File();
-                fileMetadata.setName(data_fitxer + "_upload.txt");
+                fileMetadata.setName(data_fitxer + "_frame.csv");
                 fileMetadata.setMimeType("text/plain");
-                FileContent mediaContent = new FileContent("text/plain", tempFile);
+                java.io.File fileToUpload = new java.io.File(activity.getFilesDir(), "frame.csv");
+                FileContent mediaContent = new FileContent("text/plain",   fileToUpload);
                 fileMetadata.setParents(Collections.singletonList(folderId)); //Indiquem la carpeta destí
 
                 try {
@@ -227,7 +227,7 @@ public class PujarFitxer {
 
                     if (uploadedFile != null) {
                         Log.i("uploadFileToDrive", "Fitxer pujat! ID: " + uploadedFile.getId() + ", Parents: " + uploadedFile.getParents());
-                        activity.runOnUiThread(() -> Toast.makeText(activity, "Fitxer pujat amb èxit!", Toast.LENGTH_LONG).show());
+                        //activity.runOnUiThread(() -> Toast.makeText(activity, "Fitxer pujat amb èxit!", Toast.LENGTH_LONG).show());
                     }
                 } catch (UserRecoverableAuthIOException e) {
                     // Captura l'error d'autorització i llança el flux per demanar permisos a l'usuari

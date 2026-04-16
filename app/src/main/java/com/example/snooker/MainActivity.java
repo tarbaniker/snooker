@@ -96,27 +96,28 @@ public class MainActivity extends AppCompatActivity {
 
         lexic = new Lexic();
 
-        logIt.setFerLog(true);  //Si li passem true LogIt.i farà Log.i , si li passem false no farà res
+        logIt.setFerLog(false);  //Si li passem true LogIt.i farà Log.i , si li passem false no farà res
 
-        if (!loginOK)
-        //anem a identificar-nos amb l'usuari Google
-        Log.i("onCreate","Anem a identificar-nos amb l'usuari Google...");
-        pujador.signInWithGoogle(new PujarFitxer.OnSignInListener() {
-            @Override
-            public void onSignInSuccess(String email) {
-                // This code runs ONLY after the credential manager finishes
-                loginOK = true;
-                loginEmail = email;
-                Log.i("onCreate", "Login OK");
-                //pujador.uploadFileToDrive(email);
-            }
-            @Override
-            public void onSignInFailure(String error) {
-                // Handle error
-                Log.e("Main", "Login failed: " + error);
-            }
+        if (!loginOK) {
+            //anem a identificar-nos amb l'usuari Google
+            LogIt.i("onCreate", "Anem a identificar-nos amb l'usuari Google...");
+            pujador.signInWithGoogle(new PujarFitxer.OnSignInListener() {
+                @Override
+                public void onSignInSuccess(String email) {
+                    // This code runs ONLY after the credential manager finishes
+                    loginOK = true;
+                    loginEmail = email;
+                    LogIt.i("onCreate", "Login OK");
+                }
 
-        });
+                @Override
+                public void onSignInFailure(String error) {
+                    // Handle error
+                    Log.e("onCreate", "Login failed: " + error);
+                }
+
+            });
+        }
 
     }
 
@@ -203,9 +204,9 @@ public class MainActivity extends AppCompatActivity {
         // si no va, provarem amb el mètode "cancel"
         speechRecognizer.cancel();
 
+        //anem a pujar el fitxer
         if (loginOK) pujador.uploadFileToDrive(loginEmail);
-        else Log.i("finalitzar", "No s'ha pogut pujar el fitxer");
-
+        else LogIt.i("finalitzar", "No s'ha pogut pujar el fitxer");
 
         String text = "Final. Gràcies per utilitzar aquesta aplicació.";
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
