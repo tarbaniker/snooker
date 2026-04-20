@@ -5,7 +5,7 @@ import android.util.Log;
 import java.util.Random;
 
 public class Jugadors {
-    String[] nomJugadors = {"Enric", "Francesc", "Josep"};
+    String[] nomJugadors = {"Enric Josep", "Francesc"};
     String[] nomJugador = { null, null};
 
     private static final int[] punts = {0, 0};
@@ -80,21 +80,34 @@ public class Jugadors {
         }
     }
 
-    public void setJugadorInicial() {
+    public void setJugadorInicial(int inicial) {
+        /*
         int inicial;
         Random rand = new Random();
         // Escollim parella de jugadors
         inicial = rand.nextInt(3);
-        if (inicial > 2) {
+        */
+
+        if (inicial > 1) {
             Log.e("Jugadors", "valor inicial" + inicial);
         }
-        nomJugador[0] = nomJugadors[inicial];
-        nomJugador[1] = nomJugadors[inicial > 1 ? 0 : inicial + 1];
 
-        // Escollim primer jugador a taula
-        jugadorActual = rand.nextInt(2);
-        if (jugadorActual > 1) {
-            Log.e("Jugadors", "jugador actual" + jugadorActual);
+        switch (inicial) {
+            case 0:
+                nomJugador[0] = nomJugadors[0];
+                nomJugador[1] = nomJugadors[1];
+                break;
+            case 1:
+                nomJugador[0] = nomJugadors[1];
+                nomJugador[1] = nomJugadors[0];
+                break;
+            default:
+                Log.e("Jugadors", "valor inicial" + inicial);
         }
+
+        // el jugador a taula sempre serà el jugador 0
+        jugadorActual = 0;
+
+        entrada=0;
     }
 }

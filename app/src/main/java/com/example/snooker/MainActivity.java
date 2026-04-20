@@ -12,9 +12,9 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
-// import android.view.View;
 // import android.view.View.OnClickListener;
-// import android.widget.Button;
+import android.view.View;
+import android.widget.Button;
 // import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,9 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private final SpeechRecognizer speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
     private TextToSpeech textToSpeech;
 
-    private TextView tJugador;
-    private TextView tJugador1;
-    private TextView tJugador2;
+    private TextView tJugador,  tJugador1, tJugador2, ttrenca, etInput;
+    private Button btnFran, btnEquip;
     private Jugadors els_jugadors;
     //private Boolean resultats_parcials;
     private Context context;
@@ -66,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean loginOK = false;
     private String loginEmail;
 
+    private int jugadorInicial = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +79,11 @@ public class MainActivity extends AppCompatActivity {
         tJugador = findViewById(R.id.jugador);
         tJugador1 = findViewById(R.id.jugador1);
         tJugador2 = findViewById(R.id.jugador2);
+        ttrenca = findViewById(R.id.trenca);
+        etInput = findViewById(R.id.etInput);
+
+        btnFran = findViewById(R.id.btnFran);
+        btnEquip = findViewById(R.id.btnEquip);
 
         // Creem els jugadors
         els_jugadors = new Jugadors();
@@ -92,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         speechRecognizer.setRecognitionListener(new SpeechRecognitionListener());
 
         // Initialize TextToSpeech
-        textToSpeech = new TextToSpeech(context, this::onInit);
+        //textToSpeech = new TextToSpeech(context, this::onInit);
 
         lexic = new Lexic();
 
@@ -119,10 +125,35 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        btnFran.setOnClickListener(V -> {
+            Log.i("onCreate","Butó Fran!");
+            btnFran.setEnabled(false);
+            btnEquip.setEnabled(false);
+            ttrenca.setVisibility(View.INVISIBLE);
+            jugadorInicial=1;
+
+            // Initialize TextToSpeech
+            textToSpeech = new TextToSpeech(context, this::onInit);
+
+        });
+
+        btnEquip.setOnClickListener( V -> {
+            Log.i("onCreate","Butó Equip!");
+            btnEquip.setEnabled(false);
+            btnFran.setEnabled(false);
+            ttrenca.setVisibility(View.INVISIBLE);
+            jugadorInicial=0;
+
+            // Initialize TextToSpeech
+            textToSpeech = new TextToSpeech(context, this::onInit);
+
+        });
+
     }
 
     private void onInit(int status) {
         LogIt.i("onInit", "inici");
+
 
         //resultats_parcials = false;
         if (status == TextToSpeech.SUCCESS) {
@@ -136,7 +167,11 @@ public class MainActivity extends AppCompatActivity {
             Log.e("onInit", "Initialization failed");
         }
 
-        els_jugadors.setJugadorInicial();
+        Log.i("onInit", "jugadorInicial ->" + jugadorInicial + "<-");
+        els_jugadors.setJugadorInicial(jugadorInicial);
+
+        Log.i("onInit","Jugador a taula: " + els_jugadors.nom_jugador());
+
         tJugador.setText(String.format("%s%s", getString(R.string.jugador_a_taula), els_jugadors.nom_jugador()));
         tJugador1.setText(String.format(Locale.forLanguageTag("ca-ES"),
                 "%s %d",
@@ -166,7 +201,27 @@ public class MainActivity extends AppCompatActivity {
         // Afegeixo que comenci el startListening
         startListening();
 
+
     }
+
+    private void refreshUI() {
+        Log.i("refreshUI", "inici");
+        tJugador.setText(String.format("%s%s", getString(R.string.jugador_a_taula), els_jugadors.nom_jugador()));
+        tJugador1.setText(String.format(Locale.forLanguageTag("ca-ES"),
+                "%s %d",
+                els_jugadors.nom_jugador(1),
+                els_jugadors.getPuntsJugador(1)));
+        tJugador2.setText(String.format(Locale.forLanguageTag("ca-ES"),
+                "%s %d",
+                els_jugadors.nom_jugador(2),
+                els_jugadors.getPuntsJugador(2)));
+
+        // If you have a break/entry counter:
+        if (etInput != null) {
+            etInput.setText(String.format(Locale.forLanguageTag("ca-ES"), "Entrada: %d", els_jugadors.getEntrada()));
+        }
+    }
+
 
     @SuppressLint("UnsafeOptInUsageError")
     private void startListening() {
@@ -580,6 +635,9 @@ public class MainActivity extends AppCompatActivity {
             tJugador.setText(String.format("%s%s", getString(R.string.jugador_a_taula), els_jugadors.nom_jugador()));
         }
 
+        //refresquem la pantalla
+        refreshUI();
+
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
         // Donem temps a sentir el missatge
             try {
@@ -587,7 +645,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Log.e("fer_repetir", "error sleep", e);
             }
-
 
     }
 
