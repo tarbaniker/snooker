@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
         lexic = new Lexic();
 
-        logIt.setFerLog(false);  //Si li passem true LogIt.i farà Log.i , si li passem false no farà res
+        logIt.setFerLog(false);  //Si li passem true LogIt.i farà Log.i, si li passem false no farà res
 
         if (!loginOK) {
             //anem a identificar-nos amb l'usuari Google
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
         // si no va, provarem amb el mètode "cancel"
         speechRecognizer.cancel();
 
-        //anem a pujar el fitxer
+        //pujarem el fitxer
         if (loginOK) pujador.uploadFileToDrive(loginEmail);
         else LogIt.i("finalitzar", "No s'ha pogut pujar el fitxer");
 
